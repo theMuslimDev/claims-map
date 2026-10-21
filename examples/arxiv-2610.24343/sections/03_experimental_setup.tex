@@ -1,0 +1,111 @@
+\section{Experimental Setup}
+ All NVFP4 variants are implemented in a common training stack and trained on the same GPU architecture.
+
+\paragraph{Models and data.}
+We evaluate both dense and sparse hybrid
+Mamba-Transformer architectures. The dense setting uses the 8B variant of the NVIDIA Nemotron-H Family of Hybrid Mamba-Transformer Models \citep{nvidia2025nemotronhfamilyaccurateefficient}. This model has 24 Mamba-2 layers, 4 Attention layers, and 24 FFN layers.  We train on the same data distribution as \citet{nvidia2025nemotronhfamilyaccurateefficient}, following their phased data-blending approach \citep{feng2024maximizedataspotentialenhancing} with diverse data for the first 600B tokens and high-quality data for the remainder of the 1T token horizon. 
+ We additionally validated NVFP4 pretraining recipes on the Nemotron 3 Nano hybrid Mamba-Transformer MoE architecture (30B-A3B), using the first 1T tokens from the Phase 1 data mixture of the 25T-token pretraining curriculum described by \citet{nvidia2025nemotron3nanoopen, nvidia2025nvidianemotron3efficient}. Like Nemotron-H, this model has a high ratio of Mamba-2 to attention layers. Each MoE layer contains 128 routed experts, with top-6 routing and 2 shared experts. We report training and validation loss alongside downstream evaluations spanning knowledge, reasoning, math, and coding benchmarks.
+
+
+\paragraph{Quantization method terminology.}
+Quantization is applied to the network's linear layers and grouped linear layers. To describe quantization recipes, we refer to three general matrix-matrix multiplication (GEMM) operations and the quantized operands to these products. Assuming GEMM contracts along the last dimension of the two inputs, we formalize them as follows:
+\begin{enumerate}
+    \item \textbf{Y=GEMM(X, W)} --- the product between the input, X, and the weight, W.
+    \item \textbf{DGRAD=GEMM(G, W.T)} --- the product between the gradient, G with respect to Y, and the transposed weight, W.T.
+    \item \textbf{WGRAD=GEMM(G.T, X.T)} --- the product between the transposed gradient, G.T, and the transposed input, X.T.
+\end{enumerate}
+
+When both operands of a GEMM are quantized to NVFP4 along their last dimension, the multiplication can be performed using specialized Tensor Cores on Blackwell GPUs. As all operands across the three GEMMs are unique, we will use the notation above to discriminate between each tensor in a computation scheme.
+
+\paragraph{Compared techniques.}
+We instantiate the main design choices from prior recipes in a common framework:
+
+\begin{itemize}
+    \item \textbf{NVIDIA~'25 NVFP4:} two-dimensional weight quantization, stochastic rounding on gradients, static Random Hadamard Transforms (RHTs) on WGRAD, and selective high-precision layers \citep{nvidia2025pretraining}.
+
+    \item \textbf{Quartet-II-style backward pass:} constructed through three cumulative updates \cite{panferov2026quartetii}:
+    \begin{itemize}
+        \item One-dimensional weight quantization with backward re-quantization \citep{chen2025oscillationreducedmxfp4trainingvision, castro2025quartet, chen2025tetrajet};
+        \item Random Hadamard Transforms on both backward GEMMs \citep{tseng2025mxfp4, castro2025quartet, chen2025tetrajet}; and
+        \item MS-EDEN applied to backward tensors \citep{panferov2026quartetii}.
+    \end{itemize}
+    
+    Since the first two components have been studied as design choices in existing low-precision training recipes, we ablate them separately to measure their individual contributions to model quality. MS-EDEN adapts EDEN’s randomized-rotation and corrective-rescaling framework to microscaling formats \citep{vargaftik2022edencommunicationefficientrobustdistributed, panferov2026quartetii}. To instantiate these randomized rotations, we replace the baseline recipe's static RHT sign vectors with resampled vectors throughout training.
+
+    \item \textbf{Four Over Six:} adaptive block-scale selection applied selectively \citep{cook2025fouroversix}.
+\end{itemize}
+
+
+\newcolumntype{Y}[1]{>{\hsize=#1\hsize\raggedright\arraybackslash}X}
+
+\begin{table*}[h!]
+  \centering
+  \caption{Recipe improvements over the prior state of the art at this model and token scale.
+    All recipes keep the last 15\% of layers in BF16 unless otherwise noted.}
+  \label{recipe_table}
+  \begin{tabularx}{\textwidth}{p{1.7cm} Y{0.7} Y{0.5} Y{1.8} Y{0.6} Y{0.8} Y{0.7}}
+    \toprule
+    \rowcolor{gray!15}
+    \textbf{Recipe} &
+    \textbf{Weight Quant} &
+    \textbf{Weight Re-Quant} &
+    \textbf{Tiled Random Hadamard Transforms} &
+    \textbf{Random Sign Vectors} &
+    \textbf{Technique to Address Bias in Gradients} &
+    \textbf{Four Over Six Tensors} \\
+    \midrule
+    \textbf{\nvrecipe} &
+    2D &
+    No &
+    Dim-16 WGRAD &
+    Static &
+    SR &
+    None \\
+    \midrule
+    \textbf{Update 1} &
+    1D &
+    Yes &
+    Dim-16 WGRAD &
+    Static &
+    SR &
+    None \\
+    \midrule
+    \textbf{Update 2} &
+    1D &
+    Yes &
+    Dim-128 WGRAD, DGRAD &
+    Resampled &
+    SR &
+    None \\
+    \midrule
+    \textbf{Update 3} &
+    1D &
+    Yes &
+    Dim-128 WGRAD, DGRAD &
+    Resampled &
+    MS-EDEN &
+    W.T, X.T \\
+    \midrule
+    \textbf{\newrecipe} &
+    1D &
+    Yes &
+    Dim-128 WGRAD, DGRAD &
+    Resampled &
+    MS-EDEN &
+    W, X,  W.T, X.T  \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}
+
+
+
+\paragraph{Questions.}
+Our experiments are organized around the following questions:  
+
+\begin{itemize}
+    \item Do these new recipe techniques provide incremental benefits to model quality at scale? 
+    \item Are selective high-precision layers necessary for long-horizon accuracy? 
+    \item How do the benefits of unbiased quantization vary across backward-pass tensors? 
+    \item Do trends with NVFP4 quantization reproduce across dense and MoE architectures?
+\end{itemize}
+

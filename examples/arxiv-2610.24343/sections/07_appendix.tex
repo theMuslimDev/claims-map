@@ -1,0 +1,195 @@
+\section{Appendix}
+
+\subsection{Model and Training Parameters}
+\label{model_and_training_params}
+Model and training parameters are summarized in Tables \ref{model_params} and \ref{train_params}. In our experiments, both models were trained using AdamW with the Warmup-Stable-Decay learning-rate schedule, with annealing over the final 20\% of the token horizon for Nemotron 3 Nano and the final 15\% for Nemotron-H 8B. Each model was trained to a maximum of 1T tokens; some ablations were stopped early in the schedule. Weight decay of 0.1 was used for all models. Attention layers used Grouped Query Attention. All models have a sequence length of 8192.
+
+\begin{table}[h]
+  \centering
+  \caption{Model parameters for each experimental setup. Active parameter counts exclude embeddings. $^\dagger$ Nemotron 3 Nano uses MoE layers.}
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Model & No. Mamba-2 Layers & No. Attention Layers & \shortstack{No. FFN/MoE$^\dagger$\\Layers} & No. KV Heads & \shortstack{Active/ Total\\Parameters}\\
+    \hline
+    Nemotron 3 Nano & 23 & 6 & 23 & 2 & 3.2B / 31.6B\\
+    \hline
+    Nemotron-H & 24 & 4 & 24 & 8 & 8B \\
+    \hline
+  \end{tabular}
+  \label{model_params}
+\end{table}
+
+
+\begin{table}[h]
+  \centering
+  \caption{Training parameters for each experimental setup.}
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    Model & Batch Size & Min LR & LR\\
+    \hline
+    Nemotron 3 Nano & 3072 & 1e-5 & 1e-3\\
+    \hline
+    Nemotron-H & 768 & 8e-6 & 8e-4 \\
+    \hline
+  \end{tabular}
+  \label{train_params}
+\end{table}
+
+
+\subsection{Downstream Task Accuracy and Run-to-Run Variability}
+
+To determine whether differences in training and validation loss gaps and downstream task accuracy exceed expected
+run-to-run variability, we trained the \nvrecipe recipe three times and evaluated each
+resulting model on the same downstream tasks. 
+
+\subsubsection{Loss Gap Variability}
+\label{app:loss-variability}
+We measure run-to-run loss variability as
+$\max_{a \neq b} |L_a-L_b|/L_b$ across the three repeated runs, where $L$ is the loss measured at the 1T-token horizon.
+For the Nemotron 3 Nano model, this variability is approximately \(0.06\%\) in training loss and \(0.04\%\) in validation loss; for the Nemotron-H 8B model, it is \(0.027\%\) and \(0.064\%\), respectively. Loss differences substantially exceeding these ranges are unlikely to be explained by run-to-run variability alone.
+
+\subsubsection{Downstream Task Accuracy}
+For model $m$ and task $t$, we
+estimate the relative noise tolerance as
+\begin{equation}
+    \epsilon_{m,t} =
+    \frac{\max_i s_{m,t,i} - \min_i s_{m,t,i}}
+         {\max_i s_{m,t,i}},
+\end{equation}
+where $s_{m,t,i}$ is the score from repeated run $i$. We then calculate the
+relative difference between \newrecipe and the \nvrecipe baseline:
+\begin{equation}
+    \Delta_{m,t} =
+    \frac{s_{m,t}^{\mathrm{Mosaic}} -
+          s_{m,t}^{\mathrm{NV25}}}
+         {s_{m,t}^{\mathrm{NV25}}}.
+\end{equation}
+A positive $\Delta_{m,t}$ indicates that \newrecipe improves accuracy.
+Differences with $\lvert\Delta_{m,t}\rvert > \epsilon_{m,t}$
+are considered outside the corresponding noise reference. Because this estimate is based on only three runs, the measured range may understate the true run-to-run variability.
+
+For each aggregate category $C$, we report the mean of
+its constituent task scores and compute the relative difference
+between the resulting NVIDIA~'25 NVFP4 and Mosaic NVFP4 category scores.
+This aggregate relative difference can equivalently be written as a
+weighted average of the task-level relative differences:
+\[
+\Delta_{m,C}
+=
+\sum_{t \in C} w_{m,t}\Delta_{m,t}
+=
+\frac{
+\bar{s}^{\,\mathrm{Mosaic}}_{m,C}
+-
+\bar{s}^{\,\mathrm{NV25}}_{m,C}
+}{
+\bar{s}^{\,\mathrm{NV25}}_{m,C}
+},
+\qquad
+w_{m,t}
+=
+\frac{s^{\mathrm{NV25}}_{m,t}}
+{\sum_{j \in C}s^{\mathrm{NV25}}_{m,j}}.
+\]
+Here, $w_{m,t}$ is the normalized contribution of task $t$ to the
+aggregate NVIDIA~'25 NVFP4 score. We use the same weights to combine
+the task-level noise tolerances:
+\[
+\widetilde{\epsilon}_{m,C}
+=
+\sum_{t \in C}w_{m,t}\epsilon_{m,t}.
+\]
+
+We use $\widetilde{\epsilon}_{m,C}$ as a score-aligned
+aggregate noise reference.
+
+\begin{table*}[h]
+\centering
+\caption{
+Downstream-task scores and measured run-to-run variability.
+For individual tasks, the noise reference is the relative range across
+three repeated runs. For aggregate rows, it is an average weighted by the \nvrecipe task scores. Boldface denotes differences outside the corresponding
+noise reference.
+}
+\label{tab:downstream_noise}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Task}
+& \textbf{\shortstack{NVIDIA '25\\NVFP4 (0--100)}}
+& \textbf{\shortstack{Mosaic\\NVFP4 (0--100)}}
+& \shortstack{\textbf{Noise}\\\textbf{Reference (\%)}}
+& \textbf{$\boldsymbol{\Delta}$ \textbf{(\%)}} \\
+\midrule
+
+\multicolumn{5}{l}{\textbf{Nemotron 3 Nano (30B-A3B)}} \\
+\midrule
+
+\rowcolor{gray!12}
+\multicolumn{5}{l}{\textbf{General Knowledge}} \\
+MMLU, 5-shot
+& 67.5 & 68.4 & 0.9 & \textbf{+1.3} \\
+MMLU-Pro, 5-shot CoT
+& 45.0 & 47.1 & 6.3 & +4.7 \\
+
+\rowcolor{gray!12}
+\textbf{Math Average}
+& 79.4 & 79.2 & 4.6 & -0.3 \\
+\multicolumn{5}{l}{\textit{(Math 500, 4-shot; GSM8K, 8-shot CoT)}} \\
+
+\rowcolor{gray!12}
+\textbf{Common Sense Average}
+& 77.6 & 77.1 & 1.4 & -0.6 \\
+\multicolumn{5}{l}{\textit{(ARC Challenge, 25-shot; WinoGrande, 0-shot;
+HellaSwag, 0-shot)}} \\
+
+\rowcolor{gray!12}
+\textbf{Code Average}
+& 57.1 & 56.6 & 6.8 & -0.9 \\
+\multicolumn{5}{l}{\textit{(HumanEval, average Pass@1;
+MBPP Sanitized, 3-shot)}} \\
+
+\rowcolor{gray!12}
+\multicolumn{5}{l}{\textbf{Reading Comprehension}} \\
+RACE, 0-shot
+& 80.8 & 81.1 & 0.7 & +0.4 \\
+
+\midrule
+\multicolumn{5}{l}{\textbf{Nemotron-H 8B}} \\
+\midrule
+
+\rowcolor{gray!12}
+\multicolumn{5}{l}{\textbf{General Knowledge}} \\
+MMLU, 5-shot
+& 61.0 & 60.3 & 2.2 & -1.1 \\
+MMLU-Pro, 5-shot CoT
+& 29.7 & 27.6 & 9.8 & -7.1 \\
+
+\rowcolor{gray!12}
+\textbf{Math Average}
+& 51.3 & 52.3 & 4.6 & +1.9 \\
+\multicolumn{5}{l}{\textit{(Math 500, 4-shot; GSM8K, 8-shot CoT)}} \\
+
+\rowcolor{gray!12}
+\textbf{Common Sense Average}
+& 76.5 & 75.9 & 1.1 & -0.8 \\
+\multicolumn{5}{l}{\textit{(ARC Challenge, 25-shot; WinoGrande, 0-shot;
+HellaSwag, 0-shot)}} \\
+
+\rowcolor{gray!12}
+\textbf{Code Average}
+& 43.4 & 43.0 & 5.6 & -0.9 \\
+\multicolumn{5}{l}{\textit{(HumanEval, average Pass@1;
+MBPP Sanitized, 3-shot)}} \\
+
+\rowcolor{gray!12}
+\multicolumn{5}{l}{\textbf{Reading Comprehension}} \\
+RACE, 0-shot
+& 77.7 & 78.8 & 1.1 & \textbf{+1.4} \\
+
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+\end{document}
+

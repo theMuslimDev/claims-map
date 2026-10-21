@@ -1,0 +1,45 @@
+\section{Experimental Results}
+
+\subsection{Ablation Studies on Recipe Modifications}
+We ablate each recipe modification on Nemotron 3 Nano, starting from the  \citet{nvidia2025pretraining} recipe and stacking techniques sequentially (Table \ref{recipe_table}). We refer to the final stacked recipe as \newrecipe. The first update replaces two-dimensional weight quantization with one-dimensional quantization, re-quantizing in the backward pass. The second adds a dimension-128 tiled Random Hadamard Transform to DGRAD and updates the WGRAD transform to use a consistent tile shape and a resampled sign vector throughout training. The third applies MS-EDEN to gradient tensors in place of stochastic rounding and adds Four Over Six scale selection to the remaining backward-pass tensors. The fourth adds Four Over Six to the forward-pass tensors. Each modification improves training loss (Figure \ref{fig:recipe_stacking}), yielding a 0.36 pp total improvement once fully stacked. The largest single gain comes from replacing stochastic rounding with MS-EDEN and adding Four Over Six on the backward tensors, which we attribute largely to MS-EDEN's ability to achieve unbiasedness at lower quantization-error cost than stochastic rounding \citep{panferov2026quartetii}. When running additional ablations with the MS-EDEN technique, we found that resampling the stochastic-rounding pattern for corrected scale factors, rather than reusing a fixed pattern, and independently randomizing the DGRAD RHT sign vector for each data-parallel replica, rather than once per global batch, yielded an additional 0.028 pp improvement in loss gap on the 30B-A3B model with a different optimizer configuration. The results in this work were obtained without these extra sources of stochasticity, suggesting improvements reported here are likely conservative, and we leave studying impacts of extra stochasticity as a subject of future work.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/icml_workshop_fig2.png}
+  \caption{Stability study of the \newrecipe recipe with the last 15\% of the network kept in BF16 vs. all layers quantized on the Nemotron-H 8B model.}
+  \label{fig:last_15_pct_bf16}
+\end{figure}
+
+\begin{figure*}[h!]
+\centering
+\includegraphics[
+  width=\textwidth,
+  trim=1pt 1pt 1pt 1pt,
+  clip
+]{figures/icml_workshop_fig3_edited.png}
+  \caption{Different backward-quantization schemes on Nemotron 3 Nano, with all layers quantized (left) or the last 15\% of layers kept in BF16 (right). With all layers quantized, the configuration applying MS-EDEN to gradient tensors and Four Over Six scale selection to the remaining backward tensors, X.T and W.T, yields the lowest observed loss gap. At this model size and token horizon, the backward-pass techniques show no clear separation when the last 15\% of layers are kept in BF16.}
+  \label{fig:backward_unbiased}
+\end{figure*}
+
+
+
+\subsection{Selective High-Precision Layers are Required}
+Figure \ref{fig:last_15_pct_bf16} shows that the \newrecipe recipe diverges on the Nemotron-H 8B model past 300B tokens when all layers are quantized to NVFP4.
+
+
+\begin{figure*}[h]
+\centering
+  \includegraphics[width=\textwidth]{figures/icml_workshop_fig4.png}
+  \caption{Percent relative train (left) and validation (right) loss difference compared to BF16 (lower is better) evaluated on the Nemotron-H 8B model to 1T tokens. The \newrecipe recipe has improved training and validation loss over most of the token horizon.}
+  \label{fig:final_recipe_8B}
+\end{figure*}
+
+
+\subsection{Benefits of Backward-Pass Unbiasedness}
+We studied backward pass quantization strategies on Nemotron 3 Nano. Recipes in this set of ablations informed Update 3 of Table \ref{recipe_table}. Each uses 1D weight quantization with re-quantization in the backward pass and dimension-128 tiled Random Hadamard Transforms on both WGRAD and DGRAD. We vary the use of MS-EDEN and Four Over Six on backward tensors, applying: i) MS-EDEN on all backward tensors, ii) MS-EDEN on gradients only, iii) Four Over Six on all backward tensors, and iv) MS-EDEN on gradients and Four Over Six on the remaining backward tensors (X.T, W.T). These recipes are tested with and without the last 15\% of the network kept in BF16. As shown in Figure \ref{fig:backward_unbiased}, applying MS-EDEN to all tensors in backward GEMMs provides no clear benefit over applying MS-EDEN only to gradients. When all layers are quantized, the recipe applying MS-EDEN to G and G.T and Four Over Six to X.T and W.T yields the lowest observed loss gap among the tested recipes, although the separation is small. This may indicate that bias correction is most important for the gradient tensors, supporting results from \citep{nvidia2025pretraining}.
+
+
+\subsection{The Best Stacked Recipe}
+Both the \newrecipe and \nvrecipe recipes were used to train Nemotron 3 Nano (30B-A3B) (Figure \ref{fig:recipe_stacking}) and Nemotron-H 8B (Figure \ref{fig:final_recipe_8B}) to 1T tokens, keeping the last 15\% of the network in BF16 for the entirety of training. On the dense model, the version trained with the \newrecipe{} recipe finishes training with less than a 1.2\% relative train loss gap from BF16 and improves upon the previous loss gap by 0.24 percentage points. The benefit of \newrecipe is most pronounced in the beginning of training and then during the annealing stage. Train and validation loss gap dynamics differ slightly due to dataset differences, but the gap between recipes is consistent across both. The switch from Phase 1 to Phase 2 data introduces a transiently higher loss gap for the \newrecipe{} recipe, though sustained improvements are  visible again after training has progressed in Phase 2. Both recipes show an increased loss gap from BF16 during the learning rate annealing phase. On the MoE model, the \newrecipe{} recipe shows sustained improvement throughout the token horizon, starting after the first 75B tokens (Figure \ref{fig:recipe_stacking}). The model trained with the \newrecipe recipe finishes training with less than a 0.81\% relative train loss gap from BF16 and improves upon the previous loss gap by 0.36 percentage points. The training curriculum is restricted to a single phase of data so the only change in loss gap trajectory occurs during the learning rate annealing, which impacts both recipes equally (Figure \ref{fig:recipe_stacking}). These differences exceed the run-to-run variability observed across three repeated runs at the 1T-token horizon (Appendix~\ref{app:loss-variability}). 
+
+
