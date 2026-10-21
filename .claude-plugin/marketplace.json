@@ -1,0 +1,16 @@
+{
+  "name": "claims-map-marketplace",
+  "owner": {
+    "name": "Muhammed Mahmood"
+  },
+  "plugins": [
+    {
+      "name": "claims-map",
+      "source": "./",
+      "description": "Maps a paper's claims across its sections (consistency, not correctness)."
+    }
+  ],
+  "metadata": {
+    "description": "Marketplace for the claims-map skill"
+  }
+}
