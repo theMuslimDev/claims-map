@@ -1,0 +1,7 @@
+[
+{"id":"T01","sentence":"The method reaches 95\\% accuracy on the test set.","file":"sections/00_abstract.tex","location":"abstract, sentence 1","type":"numeric"},
+{"id":"T02","sentence":"It runs in 1.39 ms per frame.","file":"sections/00_abstract.tex","location":"abstract, sentence 2","type":"numeric"},
+{"id":"T03","sentence":"It beats the baseline.","file":"sections/00_abstract.tex","location":"abstract, sentence 3","type":"comparative"},
+{"id":"T04","sentence":"Prior work uses Kalman filters \\cite{smith2020}.","file":"sections/01_intro.tex","location":"intro, sentence 1","type":"citation"},
+{"id":"T05","sentence":"We train the classifier in three stages.","file":"sections/00_abstract.tex","location":"abstract, sentence 4","type":"definition"}
+]

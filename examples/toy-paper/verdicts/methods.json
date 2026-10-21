@@ -1,0 +1,7 @@
+{"section":"methods","verdicts":[
+{"claim":"T01","verdict":"partial","anchor":{"quote":"This sentence does not exist in the file."}},
+{"claim":"T02","verdict":"absent"},
+{"claim":"T03","verdict":"absent"},
+{"claim":"T04","verdict":"absent"},
+{"claim":"T05","verdict":"anchored","anchor":{"quote":"We train a classifier in three stages, each starting from the previous weights."}}
+],"unclaimed":[]}

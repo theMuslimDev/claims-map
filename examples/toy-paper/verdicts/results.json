@@ -1,0 +1,7 @@
+{"section":"results","verdicts":[
+{"claim":"T01","verdict":"anchored","anchor":{"quote":"The classifier reaches 95.2\\% accuracy on the test set."}},
+{"claim":"T02","verdict":"anchored","anchor":{"quote":"Latency is 1.388 ms per frame."}},
+{"claim":"T03","verdict":"absent"},
+{"claim":"T04","verdict":"absent"},
+{"claim":"T05","verdict":"partial","anchor":{"quote":"Latency is 1.388 ms per frame."}}
+],"unclaimed":[{"type":"comparative","quote":"The method is twice as fast as the older design."}]}
