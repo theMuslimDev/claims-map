@@ -94,6 +94,10 @@ Start with "Claims absent from every body section", then the `partial` and `diff
 statements, the number check and the terminology lint. The map shows where your text agrees with itself. It does
 not say whether any claim is true, and it never suggests wording.
 
+**Uncommitted edits.** By default the snapshot copies your files as they are on disk, so unsaved-to-git edits are
+included. The script warns which files differ from the commit and the map header says so. To map exactly what is
+committed, run `python scripts/snapshot.py CONFIG --ref HEAD`.
+
 **5. Re-run after edits.** Each run takes a fresh snapshot, so re-run whenever the paper changes.
 
 ## Try the toy paper and run the tests

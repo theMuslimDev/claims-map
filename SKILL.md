@@ -51,7 +51,7 @@ Copy this checklist and tick it off. `CFG` is the paper's config, copied from
 - [ ] 6. python scripts/render_html.py <output_dir>/claims_map.md
 ```
 
-1. **Snapshot** copies the configured files, writes a macro-expanded `resolved/` copy (agents read this one), and records sha256 per file, the git commit and a dirty-tree flag. Git is only queried, never changed.
+1. **Snapshot** copies the configured files (from the working tree; add `--ref HEAD` to snapshot the committed content instead, which ignores uncommitted edits, and tell the user when the tree is dirty), writes a macro-expanded `resolved/` copy (agents read this one), and records sha256 per file, the git commit and a dirty-tree flag. Git is only queried, never changed.
 2. **Extractor** reads the `role: front` files and gathers no evidence. 3. **Section agents** each see the claims table and one section.
    Prompts, JSON formats and the unclaimed-statements flag: [reference/agent-prompts.md](reference/agent-prompts.md).
 4. **Number check** compares numbers with the same unit and shared context across sections (equal, rounding, conflict). It lists; a human decides.

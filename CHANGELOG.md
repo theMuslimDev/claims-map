@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- Fixed: `numcheck.sections: []` (the template default) scanned 0 numbers; empty now means all sections, and a zero-number run prints a hint.
+- `snapshot.py` warns which files differ from the commit and which number-macro keys are unresolved (comment lines ignored); `--ref HEAD` snapshots the committed content. The map header names modified files.
+
 ## v0.0.1 (experimental)
 - Workflow: snapshot, extractor agent, one section agent per body section, number check, markdown map with the anchor rule enforced by script, HTML render.
 - Input: LaTeX folders (`init_config.py` drafts the config from `main.tex`) and PDF, DOCX, Markdown or text files (`ingest.py` extracts the text and splits it into sections by heading).
