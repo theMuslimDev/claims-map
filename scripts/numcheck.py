@@ -86,7 +86,7 @@ def main():
     cfg = load_config(sys.argv[1])
     snap = Path(sys.argv[2]) if len(sys.argv) > 2 else latest_snapshot(cfg)
     nc = cfg.get("numcheck", {})
-    scope = set(nc.get("sections", [s["id"] for s in cfg["sections"]]))
+    scope = set(nc.get("sections") or [s["id"] for s in cfg["sections"]])  # [] or missing = all sections
     min_shared = nc.get("min_shared_words", 2)
     tol = Decimal(str(nc.get("conflict_rel_tol", 0.5)))  # farther apart than this: treated as unrelated
     items = collect(snap, cfg, scope)
@@ -118,6 +118,9 @@ def main():
                     "a": {k: a[k] for k in keep}, "b": {k: b[k] for k in keep}})
     res = {"numbers_scanned": len(items), "equal_pairs": equal, "findings": out}
     (snap.parent / "numcheck.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
+    if not items:
+        print("warning: no numbers found. Check `numcheck.sections` in the config and that the snapshot's resolved/ "
+              "files contain digits (number macros expanded?).", file=sys.stderr)
     print(f"scanned {len(items)} numbers; equal pairs {equal}; "
           f"rounding {sum(f['class'] == 'rounding' for f in out)}; conflict {sum(f['class'] == 'conflict' for f in out)}")
 
