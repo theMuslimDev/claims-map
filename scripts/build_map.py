@@ -149,6 +149,13 @@ def main():
     w(f"- snapshot: `{snap.name}`")
     w(f"- git commit: `{man['commit'][:10]}` on `{man['branch']}`; dirty tree: **{'yes' if man['dirty_tree'] else 'no'}** ({man['dirty_entries_under_paper_dir']} entries under the paper directory)")
     w("")
+    if man.get("ref"):
+        w(f"- snapshot content: committed at `{man['ref']}`; uncommitted edits are not in it")
+    else:
+        dirty = [f["file"] for f in man["files"] if f["git_status"] != "clean"]
+        if dirty:
+            w(f"- **snapshot taken from the working tree; these files differ from the commit (git state not clean): {', '.join(dirty)}**")
+    w("")
     w("| file | role | sha256 (first 12) | git state |")
     w("|---|---|---|---|")
     role = {s["file"]: s.get("role", "") for s in cfg["sections"]}
