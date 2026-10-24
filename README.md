@@ -20,8 +20,9 @@ LLM agents too, which is why every verdict must carry a quote you can check.
 3. **One section agent per body section**, in parallel. Each sees only the claims table and its own section.
 4. **Number check** (a script) compares numbers for the same quantity across sections: equal, rounding, conflict.
 5. **Build** the markdown map (the source of truth), enforcing the anchor rule mechanically, plus a terminology
-   lint from your config.
-6. **Render** a self-contained HTML matrix.
+   lint from your config. From the same checked cells it writes the **claim ledger** (`claim_ledger.md`, one status
+   per claim, worst first) and a plain-text **briefing** (`briefing.md`), the main outputs.
+6. **Render** a self-contained HTML matrix (optional).
 
 Hard rules: no anchor, no verdict; agents report and never fix; section agents are independent; terminology
 and framing rules come from your per-paper config, not the skill.
@@ -79,19 +80,27 @@ Claude asks which paper.
 agent per body section in parallel, then the scripts. It makes several model calls, so expect a few minutes and
 some usage on a real paper. Your files are never modified; everything goes to `output_dir`.
 
-**4. Read the map.** Open `claims_map.html` in a browser (or `claims_map.md`). Each row is a claim; each column is a
-body section; each cell is one of:
+**4. Read the briefing and the ledger.** `briefing.md` is a short findings list. `claim_ledger.md` has one row per
+claim, worst first, with the quoted evidence, and a detail section per claim. Each claim gets one status, computed
+by `build_map.py` in this order (the first rule that matches wins):
 
-| cell | meaning |
+| status | meaning |
 |---|---|
-| anchored | the section says the same thing (click for the quoted sentence) |
-| partial | narrower or conditioned |
-| differs | different number or term for the same thing |
-| absent | not in that section |
-| external, unverified | support is a citation; the skill does not read it |
+| Conflicting | a body section says `differs`: a different number or term for the same thing |
+| Established | a body section is `anchored` and shows it: it derives, proves or measures the claim there |
+| Assumed | the body only states it as an assumption, or relies on it without showing it |
+| Narrower | the body states only a narrower or conditioned version (`partial`) |
+| Cited | the support is a cited work, which the skill does not read (or a citation claim with no body anchor) |
+| Unsupported | no body section states it |
 
-Start with "Claims absent from every body section", then the `partial` and `differs` cells, the unclaimed
-statements, the number check and the terminology lint. The map shows where your text agrees with itself. It does
+**Established means the paper shows it, not that it is true.** A section can show something wrong, and two
+sections can agree and both be wrong. An anchored cell with no `basis` from the agent counts as shown, and the
+ledger says "basis not given". A cell whose quote is not found in the snapshot (`invalid-anchor`), has an invalid
+verdict, or got no answer never counts as support.
+
+`claims_map.md` (and `claims_map.html`, rendered from it) keeps the claim-by-section matrix, with the per-section
+cells (anchored, partial, differs, absent, external) behind the statuses. Beyond the ledger, check the unclaimed
+statements, the number check and the terminology lint. The output shows where your text agrees with itself. It does
 not say whether any claim is true, and it never suggests wording.
 
 **Uncommitted edits.** By default the snapshot copies your files as they are on disk, so unsaved-to-git edits are
@@ -104,7 +113,7 @@ committed, run `python scripts/snapshot.py CONFIG --ref HEAD`.
 ```bash
 python -m unittest discover -s tests
 ```
-25 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and verdicts (no model calls), plus unit tests for the helpers and failure paths. A manual acceptance test on a real
+69 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and verdicts (no model calls), plus unit tests for the helpers and failure paths. A manual acceptance test on a real
 CC BY arXiv paper is in `examples/arxiv-2610.24343/` (needs model agents; see its README).
 
 ## Known limits

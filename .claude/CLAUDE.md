@@ -5,7 +5,7 @@ correctness. Public repo (MIT): github.com/theMuslimDev/claims-map. Read README.
 
 ## Layout
 - `SKILL.md`, `reference/`: the skill instructions and agent prompts (keep SKILL.md under 500 lines; one level of links).
-- `scripts/`: `snapshot.py`, `numcheck.py`, `build_map.py`, `render_html.py`, `init_config.py`, `ingest.py`, shared `cm_common.py`.
+- `scripts/`: `snapshot.py`, `numcheck.py`, `build_map.py`, `ledger.py` (claim statuses, ledger and briefing text), `render_html.py`, `init_config.py`, `ingest.py`, shared `cm_common.py`.
 - `examples/`: `toy-paper` (fixed claims and verdicts for tests), `arxiv-2610.24343` (CC BY, manual acceptance test).
 - `tests/`: unittest suite with fixtures. `.claude-plugin/`: plugin and marketplace manifests (the repo root is the plugin).
 - Sub-agents default to Sonnet 5.5; the config key `agent_model` overrides it.
