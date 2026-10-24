@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.0.2 (2026-10-24)
+
 - The long usage walkthrough moved from the README to a new `USAGE.md`; the
   README keeps a short quick start and links to it.
 - README now leads with a real example (the toy paper's briefing and ledger

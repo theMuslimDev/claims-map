@@ -1,6 +1,6 @@
 {
   "name": "claims-map",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Maps a paper's claims across its sections and reports where each is stated, narrowed, named differently or missing, with a quoted anchor. Consistency only, never correctness.",
   "author": {
     "name": "Muhammed Mahmood"

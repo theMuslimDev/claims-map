@@ -9,7 +9,7 @@
       "source": {
         "source": "github",
         "repo": "theMuslimDev/claims-map",
-        "ref": "v0.0.1"
+        "ref": "v0.0.2"
       },
       "description": "Maps a paper's claims across its sections (consistency, not correctness)."
     }
