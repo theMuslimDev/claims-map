@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The long usage walkthrough moved from the README to a new `USAGE.md`; the
+  README keeps a short quick start and links to it.
 - README now leads with a real example (the toy paper's briefing and ledger
   rows) and is reordered and tightened, with no facts or caveats dropped;
   `tests/test_readme_example.py` fails if the example drifts from the golden
