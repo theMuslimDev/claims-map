@@ -67,27 +67,6 @@ section gives the file and line it came from. Established means the paper
 shows the claim, not that the claim is true. Nothing here is advice: the map
 reports where the text agrees with itself and never says what to change.
 
-## How it works
-
-1. **Snapshot** the section files (sha256, git commit, dirty-tree flag). All
-   agents read the snapshot, never the live tree.
-2. **Extractor agent** writes a claims table from the front matter. It gathers
-   no evidence.
-3. **One section agent per body section**, in parallel. Each sees only the
-   claims table and its own section.
-4. **Number check** (a script) compares numbers for the same quantity across
-   sections: equal, rounding, conflict.
-5. **Build** the markdown map (the source of truth), enforcing the anchor rule
-   mechanically, plus a terminology lint from your config. From the same checked
-   cells it writes the **claim ledger** (`claim_ledger.md`, one status per
-   claim, worst first) and a plain-text **briefing** (`briefing.md`), the main
-   outputs.
-6. **Render** a self-contained HTML matrix (optional).
-
-Hard rules: no anchor, no verdict; agents report and never fix; section agents
-are independent; terminology and framing rules come from your per-paper config,
-not the skill.
-
 ## Install
 
 Clone into your Claude Code skills folder:
@@ -122,7 +101,7 @@ Releases are listed in [CHANGELOG.md](CHANGELOG.md).
 ## Usage
 
 **1. Give it your paper.** A PDF, DOCX, Markdown or text file, or a LaTeX
-folder:
+folder. If you give no path, Claude asks which paper.
 
 ```text
 /claims-map:claims-map /path/to/paper.pdf
@@ -137,10 +116,10 @@ Claude prepares the paper and writes a draft config:
 - **LaTeX folder:** `scripts/init_config.py` reads the section order from
   `main.tex`.
 
-Either way, Claude shows you the sections it found and which are `front`
-(abstract, introduction, conclusion: the claims come from these) and `body`
-(checked against the claims). Fix any wrong role, and tell it your terminology
-rules (for example "never write Phase"). Add the output folder to `.gitignore`.
+Claude then shows you the sections it found and which are `front` (abstract,
+introduction, conclusion: the claims come from these) and `body` (checked
+against the claims). Fix any wrong role, and tell it your terminology rules (for
+example "never write Phase"). Add the output folder to `.gitignore`.
 
 LaTeX gives the cleanest results. For a PDF, anchors point at lines of the
 extracted text, not at PDF pages, and equations can come out garbled, so number
@@ -160,16 +139,12 @@ python scripts/init_config.py /path/to/latex-folder
 For every option, see `claims-map.config.template.md`. To see it work first, ask
 for `examples/toy-paper`.
 
-**2. Ask in plain words if you prefer.** "Run a claims map on /path/to/my-paper"
-works too. If you give no path, Claude asks which paper.
+**2. Wait for the agents.** Claude snapshots your files, runs one agent to
+extract the claims, then one agent per body section in parallel, then the
+scripts. It makes several model calls, so expect a few minutes and some usage on
+a real paper. Your files are never modified; everything goes to `output_dir`.
 
-**3. Wait for the agents.** Claude takes a snapshot of your files, runs one
-agent to extract the claims, then one agent per body section in parallel, then
-the scripts. It makes several model calls, so expect a few minutes and some
-usage on a real paper. Your files are never modified; everything goes to
-`output_dir`.
-
-**4. Read the briefing and the ledger.** `briefing.md` is a short findings list.
+**3. Read the briefing and the ledger.** `briefing.md` is a short findings list.
 `claim_ledger.md` has one row per claim, worst first, with the quoted evidence,
 and a detail section per claim. Each claim gets one status, computed by
 `build_map.py` in this order (the first rule that matches wins):
@@ -201,19 +176,29 @@ disk, so unsaved-to-git edits are included. The script warns which files differ
 from the commit and the map header says so. To map exactly what is committed,
 run `python scripts/snapshot.py CONFIG --ref HEAD`.
 
-**5. Re-run after edits.** Each run takes a fresh snapshot, so re-run whenever
+**4. Re-run after edits.** Each run takes a fresh snapshot, so re-run whenever
 the paper changes.
 
-## Try the toy paper and run the tests
+## How it works
 
-```bash
-python -m unittest discover -s tests
-```
+1. **Snapshot** the section files (sha256, git commit, dirty-tree flag). All
+   agents read the snapshot, never the live tree.
+2. **Extractor agent** writes a claims table from the front matter. It gathers
+   no evidence.
+3. **One section agent per body section**, in parallel. Each sees only the
+   claims table and its own section.
+4. **Number check** (a script) compares numbers for the same quantity across
+   sections: equal, rounding, conflict.
+5. **Build** the markdown map (the source of truth), enforcing the anchor rule
+   mechanically, plus a terminology lint from your config. From the same checked
+   cells it writes the **claim ledger** (`claim_ledger.md`, one status per
+   claim, worst first) and a plain-text **briefing** (`briefing.md`), the main
+   outputs.
+6. **Render** a self-contained HTML matrix (optional).
 
-79 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and
-verdicts (no model calls), plus unit tests for the helpers and failure paths. A
-manual acceptance test on a real CC BY arXiv paper is in
-`examples/arxiv-2610.24343/` (needs model agents; see its README).
+Hard rules: no anchor, no verdict; agents report and never fix; section agents
+are independent; terminology and framing rules come from your per-paper config,
+not the skill.
 
 ## Known limits
 
@@ -229,6 +214,17 @@ manual acceptance test on a real CC BY arXiv paper is in
 - Best on LaTeX. PDF input depends on text extraction: two-column layouts,
   equations, tables and figures can come out garbled, and anchors point at the
   extracted text, not PDF pages.
+
+## Tests
+
+```bash
+python -m unittest discover -s tests
+```
+
+81 tests, none needing a model: an end-to-end run on `examples/toy-paper/`
+(whose golden output is the Example above), plus unit tests. A manual acceptance
+test on a real CC BY arXiv paper is in `examples/arxiv-2610.24343/` (needs model
+agents; see its README).
 
 ## Licence
 
