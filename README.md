@@ -63,6 +63,13 @@ claude plugin install claims-map@claims-map-marketplace
 The repo root is the plugin, so a plugin install and a manual clone give the
 same files.
 
+### Versions
+
+Installs from the plugin marketplace follow the pinned release (the `ref` in
+`.claude-plugin/marketplace.json`) and stay on it until the next release ships.
+Cloning the repository follows `main`, which moves ahead of the last release.
+Releases are listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## Usage
 
 **1. Give it your paper.** A PDF, DOCX, Markdown or text file, or a LaTeX
@@ -154,7 +161,7 @@ the paper changes.
 python -m unittest discover -s tests
 ```
 
-70 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and
+79 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and
 verdicts (no model calls), plus unit tests for the helpers and failure paths. A
 manual acceptance test on a real CC BY arXiv paper is in
 `examples/arxiv-2610.24343/` (needs model agents; see its README).
