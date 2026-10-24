@@ -29,6 +29,11 @@ Requires Python 3.9+ with PyYAML (`pip install pyyaml`). Works on LaTeX folders,
 | absent | no anchor in this section; absent from every body section is the headline finding |
 | external | support is a citation; marked "external, unverified" |
 
+An `anchored` verdict may carry `basis`: `shown` (the paper derives, proves or measures it there) or `assumed` (stated as an assumption or relied on without being shown).
+
+## Statuses
+`build_map.py` gives each claim one status, first match wins: **Conflicting** (any body `differs`), **Established** (some `anchored` with basis shown; no basis counts as shown), **Assumed**, **Narrower** (only `partial`), **Cited** (only `external`, or a citation claim with no body anchor), **Unsupported** (absent everywhere). Established means the paper shows it, not that it is true. Cells that are `invalid-anchor`, `invalid-verdict` or `missing` never count as support.
+
 ## Starting
 The input is a config file (`CFG`) describing the paper. Build it from what the user gives:
 - **A PDF, DOCX, Markdown or text file:** run `python scripts/ingest.py <file>`. It extracts the text, splits it into sections by heading, and writes `<file stem>_claims_map/claims-map.config.md`. PDF needs `pdftotext` (poppler) or `pypdf`. Anchors then point at lines of the extracted text, not PDF pages; equations may be garbled.
@@ -55,14 +60,14 @@ Copy this checklist and tick it off. `CFG` is the paper's config, copied from
 2. **Extractor** reads the `role: front` files and gathers no evidence. 3. **Section agents** each see the claims table and one section.
    Prompts, JSON formats and the unclaimed-statements flag: [reference/agent-prompts.md](reference/agent-prompts.md).
 4. **Number check** compares numbers with the same unit and shared context across sections (equal, rounding, conflict). It lists; a human decides.
-5. **Build** validates anchors, applies the config's terminology lint and writes the markdown map, the source of truth. Output layout: [reference/output-format.md](reference/output-format.md).
-6. **Render** produces one self-contained HTML matrix from the markdown.
+5. **Build** validates anchors, applies the config's terminology lint and writes the markdown map, the source of truth, plus `claim_ledger.md` (one status per claim, worst first) and `briefing.md`, both from the anchor-checked cells only. Output layout and the status rule: [reference/output-format.md](reference/output-format.md).
+6. **Render** produces one self-contained HTML matrix from the markdown (optional).
 
 ## Agent model
 Sub-agents default to **Sonnet 5.5** (`claude-sonnet-5-5`). Set `agent_model` in the config to override (for example `haiku`, `opus`); pass that value as the `model` of every Agent call.
 
 ## Reporting to the user
-Calm and plain. Lead with what the map shows: claims absent everywhere, `partial` and `differs` cells, unclaimed strong statements, number check hits, lint hits. Say where a rule was ambiguous. Give no advice on how to frame results.
+Calm and plain. Lead with `briefing.md`: the counts per status, then the Unsupported, Conflicting, Narrower, Assumed and Cited claims, each with its quote, then unclaimed strong statements, number check hits and lint hits. Point to `claim_ledger.md` for the full table. Say where a rule was ambiguous and how many cells were not counted. State findings only: never say how to support, reword or reframe a claim, and never call a claim true or false.
 
 ## Limits
 Consistency is not correctness: two sections can agree and both be wrong. Agent verdicts are judgement calls, which is why each carries a quote to check. The number check is a heuristic. Claims that live only in figures, tables or captions are visible only if those files are sections or `support_files` that an agent is given.
