@@ -14,6 +14,7 @@
 - The toy paper gained a conflicting and a narrower claim and golden ledger and
   briefing files under `examples/toy-paper/expected/`; the suite is now 69
   tests.
+- Fixed: a missing PyYAML now exits with `PyYAML is required: pip install pyyaml` instead of a traceback.
 - Fixed: `numcheck.sections: []` (the template default) scanned 0 numbers; empty now means all sections, and a zero-number run prints a hint.
 - `snapshot.py` warns which files differ from the commit and which number-macro keys are unresolved (comment lines ignored); `--ref HEAD` snapshots the committed content. The map header names modified files.
 

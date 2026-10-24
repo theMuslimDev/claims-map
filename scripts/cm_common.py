@@ -3,7 +3,10 @@ import re
 import sys
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    sys.exit("PyYAML is required: pip install pyyaml")
 
 
 def load_config(path):

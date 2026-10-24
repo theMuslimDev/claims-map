@@ -79,6 +79,13 @@ class ConfigErrors(unittest.TestCase):
             cm_common.load_config(cfg)
         shutil.rmtree(tmp)
 
+    def test_missing_pyyaml_exits_with_one_line(self):
+        r = subprocess.run([sys.executable, "-c", "import sys; sys.modules['yaml'] = None; import cm_common"],
+                           cwd=ROOT / "scripts", capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1)
+        self.assertEqual(r.stderr.strip(), "PyYAML is required: pip install pyyaml")
+        self.assertNotIn("Traceback", r.stderr)
+
 
 class FailurePaths(unittest.TestCase):
     def setUp(self):
