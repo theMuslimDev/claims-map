@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- README now leads with a real example (the toy paper's briefing and ledger
+  rows) and is reordered and tightened, with no facts or caveats dropped;
+  `tests/test_readme_example.py` fails if the example drifts from the golden
+  files.
 - The marketplace entry now pins the plugin to the release tag (`ref` in a
   `github` source), so plugin installs stay on the last release while `main`
   moves on. `scripts/release.py` cuts a release (dry run by default, `--apply`
@@ -17,7 +21,7 @@
   verdict. An anchored verdict with no basis counts as shown and the ledger says
   "basis not given".
 - The toy paper gained a conflicting and a narrower claim and golden ledger and
-  briefing files under `examples/toy-paper/expected/`; the suite is now 79
+  briefing files under `examples/toy-paper/expected/`; the suite is now 81
   tests.
 - Fixed: a missing PyYAML now exits with `PyYAML is required: pip install
   pyyaml` instead of a traceback.
