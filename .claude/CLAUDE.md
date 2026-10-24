@@ -46,14 +46,22 @@ Needs Python 3.9+ and PyYAML. PDF input needs `pdftotext` (poppler) or `pypdf`.
   session.
 - Do not commit generated output (`out/`, `claims_map/`); they are gitignored.
 
-## Versioning (decided, not yet implemented)
+## Versioning
 
 Users stay on a released version until the next one ships, while `main` keeps
-moving. Keep `version` in `plugin.json` and pin the marketplace entry to the
-release tag through the git source `ref` (verify the syntax in the plugin
-marketplace docs and prove it in a throwaway config first). A release is: bump
-`version`, tag, update `ref`. Add a release script and a CI check (tests, ruff,
-validate, and that `ref` matches `version`). v0.0.1 is the only tag.
+moving. The marketplace entry in `.claude-plugin/marketplace.json` is pinned to
+the release tag (`source.ref`, `v<version>`), and `plugin.json` holds the same
+version. There is no CI; `scripts/release.py` does the release. Release only
+when asked to in that turn, and never push, tag or force-push otherwise.
+
+1. Be on a clean `main` with a non-empty `## Unreleased` in CHANGELOG.md.
+2. `python scripts/release.py X.Y.Z` is a dry run: it runs the checks and
+   prints what it would change.
+3. `python scripts/release.py X.Y.Z --apply --tag` bumps `plugin.json`, renames
+   Unreleased to `vX.Y.Z (date)` with a new empty Unreleased, sets the pin to
+   `vX.Y.Z`, makes one commit and tags it. It never pushes.
+4. `python scripts/release.py --check` confirms the version, pin and tag agree.
+5. Push `main` and the tag only when asked.
 
 ## Open work (suggested order)
 
