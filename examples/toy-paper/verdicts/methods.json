@@ -3,5 +3,6 @@
 {"claim":"T02","verdict":"absent"},
 {"claim":"T03","verdict":"absent"},
 {"claim":"T04","verdict":"absent"},
-{"claim":"T05","verdict":"anchored","anchor":{"quote":"We train a classifier in three stages, each starting from the previous weights."}}
+{"claim":"T05","verdict":"anchored","basis":"shown","anchor":{"quote":"We train a classifier in three stages, each starting from the previous weights."}},
+{"claim":"T06","verdict":"absent"}
 ],"unclaimed":[]}

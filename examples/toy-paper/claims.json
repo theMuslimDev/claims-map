@@ -3,5 +3,6 @@
 {"id":"T02","sentence":"It runs in 1.39 ms per frame.","file":"sections/00_abstract.tex","location":"abstract, sentence 2","type":"numeric"},
 {"id":"T03","sentence":"It beats the baseline.","file":"sections/00_abstract.tex","location":"abstract, sentence 3","type":"comparative"},
 {"id":"T04","sentence":"Prior work uses Kalman filters \\cite{smith2020}.","file":"sections/01_intro.tex","location":"intro, sentence 1","type":"citation"},
-{"id":"T05","sentence":"We train the classifier in three stages.","file":"sections/00_abstract.tex","location":"abstract, sentence 4","type":"definition"}
+{"id":"T05","sentence":"We train the classifier in three stages.","file":"sections/00_abstract.tex","location":"abstract, sentence 4","type":"definition"},
+{"id":"T06","sentence":"This paper learns the mapping instead.","file":"sections/01_intro.tex","location":"introduction, sentence 2","type":"scope"}
 ]

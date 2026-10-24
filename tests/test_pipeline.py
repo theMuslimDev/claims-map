@@ -51,18 +51,20 @@ class ToyPipeline(unittest.TestCase):
 
     def test_absent_everywhere_and_citation_lists_are_separate(self):
         head = self.md.split("## Claims absent from every body section")[1].split("## Citation claims")[0]
-        self.assertIn("T03", head)
+        self.assertIn("T06", head)
+        self.assertNotIn("T03", head)
         self.assertNotIn("T04", head)
         cites = self.md.split("## Citation claims with no body anchor")[1].split("## Matrix")[0]
         self.assertIn("T04", cites)
 
     def test_weak_anchor_flagged(self):
-        self.assertIn("T05", self.md)
+        self.assertIn("T03", self.md)
         self.assertIn("partial (weak anchor)", self.md)
+        self.assertIn("differs (weak anchor)", self.md)
         self.assertNotIn("anchored (weak anchor)", self.md)
 
     def test_unclaimed_statement_listed(self):
-        self.assertIn("twice as fast as the older design", self.md)
+        self.assertIn("Memory use drops by 40\\% compared", self.md)
 
     def test_number_check_reports_rounding(self):
         nc = json.loads((self.out / "numcheck.json").read_text())

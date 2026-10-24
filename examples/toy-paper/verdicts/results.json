@@ -1,7 +1,8 @@
 {"section":"results","verdicts":[
-{"claim":"T01","verdict":"anchored","anchor":{"quote":"The classifier reaches 95.2\\% accuracy on the test set."}},
-{"claim":"T02","verdict":"anchored","anchor":{"quote":"Latency is 1.388 ms per frame."}},
-{"claim":"T03","verdict":"absent"},
+{"claim":"T01","verdict":"anchored","basis":"shown","anchor":{"quote":"The classifier reaches 95.2\\% accuracy on the test set."}},
+{"claim":"T02","verdict":"anchored","basis":"shown","anchor":{"quote":"Latency is 1.388 ms per frame."}},
+{"claim":"T03","verdict":"partial","anchor":{"quote":"The method is twice as fast as the older design."}},
 {"claim":"T04","verdict":"absent"},
-{"claim":"T05","verdict":"partial","anchor":{"quote":"Latency is 1.388 ms per frame."}}
-],"unclaimed":[{"type":"comparative","quote":"The method is twice as fast as the older design."}]}
+{"claim":"T05","verdict":"differs","anchor":{"quote":"Phase 2 is evaluated second."}},
+{"claim":"T06","verdict":"absent"}
+],"unclaimed":[{"type":"numeric","quote":"Memory use drops by 40\\% compared with the older design."}]}
