@@ -1,9 +1,19 @@
 # Changelog
 
 ## Unreleased
-- New main outputs: `claim_ledger.md` (one status per claim, worst first, with quoted evidence) and `briefing.md` (a plain-text findings list), written by `build_map.py` next to `claims_map.md`. Statuses: Conflicting, Established, Assumed, Narrower, Cited, Unsupported, computed in that precedence from anchor-checked cells only. Established means the paper shows it, not that it is true. `claims_map.md` and the HTML render are unchanged.
-- Section agents may add `basis` (`shown` or `assumed`) to an `anchored` verdict. An anchored verdict with no basis counts as shown and the ledger says "basis not given".
-- The toy paper gained a conflicting and a narrower claim and golden ledger and briefing files under `examples/toy-paper/expected/`; the suite is now 69 tests.
+
+- New main outputs: `claim_ledger.md` (one status per claim, worst first, with
+  quoted evidence) and `briefing.md` (a plain-text findings list), written by
+  `build_map.py` next to `claims_map.md`. Statuses: Conflicting, Established,
+  Assumed, Narrower, Cited, Unsupported, computed in that precedence from
+  anchor-checked cells only. Established means the paper shows it, not that it
+  is true. `claims_map.md` and the HTML render are unchanged.
+- Section agents may add `basis` (`shown` or `assumed`) to an `anchored`
+  verdict. An anchored verdict with no basis counts as shown and the ledger says
+  "basis not given".
+- The toy paper gained a conflicting and a narrower claim and golden ledger and
+  briefing files under `examples/toy-paper/expected/`; the suite is now 69
+  tests.
 - Fixed: `numcheck.sections: []` (the template default) scanned 0 numbers; empty now means all sections, and a zero-number run prints a hint.
 - `snapshot.py` warns which files differ from the commit and which number-macro keys are unresolved (comment lines ignored); `--ref HEAD` snapshots the committed content. The map header names modified files.
 
