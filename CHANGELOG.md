@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- The marketplace entry now pins the plugin to the release tag (`ref` in a
+  `github` source), so plugin installs stay on the last release while `main`
+  moves on. `scripts/release.py` cuts a release (dry run by default, `--apply`
+  to commit, `--tag` to tag, never pushes) and `--check` verifies that the
+  version, the pin and the tag agree.
 - New main outputs: `claim_ledger.md` (one status per claim, worst first, with
   quoted evidence) and `briefing.md` (a plain-text findings list), written by
   `build_map.py` next to `claims_map.md`. Statuses: Conflicting, Established,
@@ -12,7 +17,7 @@
   verdict. An anchored verdict with no basis counts as shown and the ledger says
   "basis not given".
 - The toy paper gained a conflicting and a narrower claim and golden ledger and
-  briefing files under `examples/toy-paper/expected/`; the suite is now 70
+  briefing files under `examples/toy-paper/expected/`; the suite is now 79
   tests.
 - Fixed: a missing PyYAML now exits with `PyYAML is required: pip install
   pyyaml` instead of a traceback.
