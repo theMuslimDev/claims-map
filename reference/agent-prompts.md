@@ -26,16 +26,21 @@ One per `role: body` section, parallel, each given only `claims.json` and its ow
 > For every claim say what this section says about it: anchored, partial, differs, absent or external.
 > Except for absent, give a verbatim quote from this section (one sentence or clause, at most 250 characters) as
 > anchor. Report only; never propose fixes or wording, never say whether a claim is right or wrong. Raise
-> `differs` for a different term only under these terminology rules: <config terminology>. Also list unclaimed
+> `differs` for a different term only under these terminology rules: <config terminology>. For every `anchored`
+> verdict add `basis`: `shown` if the section derives, proves or measures the claim here, or `assumed` if it only
+> states it as an assumption or relies on it without showing it. Describe what the text does, not whether it is
+> right. Also list unclaimed
 > strong statements (below). Write the JSON to `<output_dir>/verdicts/<id>.json`, then reply in two sentences.
 
 Format:
 ```json
 {"section": "s04",
- "verdicts": [{"claim": "C01", "verdict": "anchored", "anchor": {"quote": "..."}, "note": "optional, one plain sentence"}],
+ "verdicts": [{"claim": "C01", "verdict": "anchored", "basis": "shown", "anchor": {"quote": "..."}, "note": "optional, one plain sentence"}],
  "unclaimed": [{"type": "numeric", "quote": "..."}]}
 ```
-One verdict per claim id. `absent` carries no anchor.
+One verdict per claim id. `absent` carries no anchor. `basis` is optional and applies to `anchored` only; a
+citation is covered by `external`, so there is no `cited` basis. An `anchored` verdict without `basis` is counted as
+`shown` by `build_map.py`, and the ledger says "basis not given".
 
 ## Unclaimed strong statements
 Each section agent also lists strong statements in its section that match no claim, limited to numeric, comparative
