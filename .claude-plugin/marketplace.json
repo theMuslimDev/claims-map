@@ -6,7 +6,11 @@
   "plugins": [
     {
       "name": "claims-map",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "theMuslimDev/claims-map",
+        "ref": "v0.0.1"
+      },
       "description": "Maps a paper's claims across its sections (consistency, not correctness)."
     }
   ],
