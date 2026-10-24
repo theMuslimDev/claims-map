@@ -18,6 +18,55 @@ This skill and its scripts were written with Claude (Anthropic's AI model) in
 Claude Code. The agents it runs are LLM agents too, which is why every verdict
 must carry a quote you can check.
 
+## Example
+
+This is the real output for the toy paper in `examples/toy-paper/`. The
+briefing, `briefing.md`:
+
+<!-- example-briefing:start -->
+
+```text
+# Briefing: Toy paper
+
+6 claims in Toy paper: 2 established, 1 conflicting, 1 narrower, 1 cited, 1
+unsupported.
+
+- **T06, unsupported.** "This paper learns the mapping instead." Claimed in
+  introduction, sentence 2; no body section states it.
+- **T05, conflicting.** "We train the classifier in three stages." (abstract,
+  sentence 4). A body section differs. results: "Phase 2 is evaluated second."
+- **T03, narrower.** "It beats the baseline." (abstract, sentence 3). The body
+  states a narrower version. results: "The method is twice as fast as the older
+  design."
+- **T04, cited.** "Prior work uses Kalman filters \cite{smith2020}." (intro,
+  sentence 1). The support is a cited work, which was not read.
+- **T01 and T02, established.** A body section shows each of them; the quotes
+  are in the ledger.
+
+Nothing here says whether any claim is true. It shows where the text agrees with
+itself.
+```
+
+<!-- example-briefing:end -->
+
+The top of the claim ledger, `claim_ledger.md`, worst first:
+
+<!-- example-ledger:start -->
+
+| id | status | claim | where claimed | evidence |
+| --- | --- | --- | --- | --- |
+| T06 | Unsupported | This paper learns the mapping instead. | introduction, sentence 2 | none: absent from methods and results |
+| T05 | Conflicting | We train the classifier in three stages. | abstract, sentence 4 | results differs: "Phase 2 is evaluated second." |
+| T03 | Narrower | It beats the baseline. | abstract, sentence 3 | results partial: "The method is twice as fast as the older design." |
+
+<!-- example-ledger:end -->
+
+Each claim gets one status: Conflicting, Established, Assumed, Narrower, Cited
+or Unsupported. Every verdict is backed by a quote, and the ledger's detail
+section gives the file and line it came from. Established means the paper
+shows the claim, not that the claim is true. Nothing here is advice: the map
+reports where the text agrees with itself and never says what to change.
+
 ## How it works
 
 1. **Snapshot** the section files (sha256, git commit, dirty-tree flag). All
