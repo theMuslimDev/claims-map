@@ -60,8 +60,16 @@ when asked to in that turn, and never push, tag or force-push otherwise.
 3. `python scripts/release.py X.Y.Z --apply --tag` bumps `plugin.json`, renames
    Unreleased to `vX.Y.Z (date)` with a new empty Unreleased, sets the pin to
    `vX.Y.Z`, makes one commit and tags it. It never pushes.
-4. `python scripts/release.py --check` confirms the version, pin and tag agree.
-5. Push `main` and the tag only when asked.
+4. Push `main` and the tag only when asked. A pushed tag is not a GitHub
+   Release.
+5. Then, when asked, `python scripts/release.py --publish` is a dry run;
+   `python scripts/release.py --publish --apply` creates the GitHub Release
+   for the tag with `gh` (title `vX.Y.Z (experimental)`, notes from the
+   CHANGELOG section). It refuses unless `gh` is logged in, the tag is local
+   and on origin, the CHANGELOG has the section, and no Release exists. It
+   never pushes or tags.
+6. `python scripts/release.py --check` confirms the version, pin, tag and (when
+   `gh` is available) the GitHub Release agree.
 
 ## Open work (suggested order)
 

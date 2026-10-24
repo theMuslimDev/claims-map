@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `scripts/release.py --publish` creates the GitHub Release for an existing,
+  pushed tag (dry run unless `--apply`; never pushes or tags), and `--check`
+  now also reports a missing GitHub Release when `gh` is available.
+
 ## v0.0.2 (2026-10-24)
 
 - The long usage walkthrough moved from the README to a new `USAGE.md`; the
