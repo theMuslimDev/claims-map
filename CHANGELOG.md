@@ -12,7 +12,7 @@
   verdict. An anchored verdict with no basis counts as shown and the ledger says
   "basis not given".
 - The toy paper gained a conflicting and a narrower claim and golden ledger and
-  briefing files under `examples/toy-paper/expected/`; the suite is now 69
+  briefing files under `examples/toy-paper/expected/`; the suite is now 70
   tests.
 - Fixed: a missing PyYAML now exits with `PyYAML is required: pip install pyyaml` instead of a traceback.
 - Fixed: `numcheck.sections: []` (the template default) scanned 0 numbers; empty now means all sections, and a zero-number run prints a hint.

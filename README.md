@@ -118,7 +118,7 @@ committed, run `python scripts/snapshot.py CONFIG --ref HEAD`.
 ```bash
 python -m unittest discover -s tests
 ```
-69 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and
+70 tests: an end-to-end run on `examples/toy-paper/` with fixed claims and
 verdicts (no model calls), plus unit tests for the helpers and failure paths. A
 manual acceptance test on a real
 CC BY arXiv paper is in `examples/arxiv-2610.24343/` (needs model agents; see its README).
