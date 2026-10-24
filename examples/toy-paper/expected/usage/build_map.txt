@@ -1,0 +1,3 @@
+wrote /path/to/paper/out/claims_map.md: 6 claims, absent-everywhere 1 (+1
+  citation), weak anchors 2, invalid anchors 1, unclaimed 1, lint hits 1
+wrote /path/to/paper/out/claim_ledger.md and /path/to/paper/out/briefing.md

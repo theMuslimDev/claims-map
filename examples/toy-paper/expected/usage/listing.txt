@@ -1,0 +1,8 @@
+out/
+  briefing.md
+  claim_ledger.md
+  claims.json
+  claims_map.md
+  numcheck.json
+  snapshot_<timestamp>/
+  verdicts/

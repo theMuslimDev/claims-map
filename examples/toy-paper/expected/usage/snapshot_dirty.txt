@@ -1,0 +1,4 @@
+/path/to/paper/out/snapshot_<timestamp>
+warning: snapshot taken from the working tree; these files differ from the
+  commit: sections/03_results.tex. Use --ref HEAD to snapshot the committed
+  content instead.

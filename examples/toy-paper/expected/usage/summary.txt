@@ -1,0 +1,8 @@
+- claims extracted: 6; body sections checked: methods, results
+- cells by verdict: absent 6, anchored 3, differs 1, invalid-anchor 1, partial 1
+- claims absent from every body section: **1**
+- citation claims with no body anchor (listed separately, expected for
+  literature review): 1
+- unclaimed strong statements: 1
+- anchors sharing no content word with their claim (check relevance): 2
+- cells rejected because the quoted anchor was not found in the snapshot: 1

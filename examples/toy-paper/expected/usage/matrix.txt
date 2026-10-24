@@ -1,0 +1,8 @@
+| id | type | where claimed | claim | methods | results |
+| --- | --- | --- | --- | --- | --- |
+| T01 | numeric | abstract, sentence 1 | The method reaches 95\% accuracy on the test set. | invalid-anchor | anchored |
+| T02 | numeric | abstract, sentence 2 | It runs in 1.39 ms per frame. | absent | anchored |
+| T03 | comparative | abstract, sentence 3 | It beats the baseline. | absent | partial (weak anchor) |
+| T04 | citation | intro, sentence 1 | Prior work uses Kalman filters \cite{smith2020}. | absent | absent |
+| T05 | definition | abstract, sentence 4 | We train the classifier in three stages. | anchored | differs (weak anchor) |
+| T06 | scope | introduction, sentence 2 | This paper learns the mapping instead. | absent | absent |

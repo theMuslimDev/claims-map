@@ -1,0 +1,9 @@
+wrote /path/to/paper/toy-paper_claims_map/claims-map.config.md
+5 sections found:
+{id: front_matter, file: ingested/00_front_matter.txt, role: front}
+{id: introduction, file: ingested/01_introduction.txt, role: front}
+{id: methods, file: ingested/02_methods.txt, role: body}
+{id: results, file: ingested/03_results.txt, role: body}
+{id: conclusion, file: ingested/04_conclusion.txt, role: front}
+Check that the roles are right (front = abstract, introduction, conclusion; body
+  = the rest).

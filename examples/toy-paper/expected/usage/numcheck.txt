@@ -1,0 +1,1 @@
+scanned 5 numbers; equal pairs 0; rounding 2; conflict 0

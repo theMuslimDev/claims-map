@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `USAGE.md` now shows real sample output from the toy paper for each step
+  (ingest, snapshot with its dirty-tree warning, number check, build summary,
+  output folder, map summary and matrix). `tests/usage_samples.py` regenerates
+  the samples from a throwaway copy with volatile parts replaced, the golden
+  files are in `examples/toy-paper/expected/usage/`, and
+  `tests/test_usage_samples.py` fails if USAGE.md drifts from them. The suite
+  is now 94 tests.
 - `scripts/release.py --publish` creates the GitHub Release for an existing,
   pushed tag (dry run unless `--apply`; never pushes or tags), and `--check`
   now also reports a missing GitHub Release when `gh` is available.

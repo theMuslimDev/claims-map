@@ -155,7 +155,7 @@ not the skill.
 python -m unittest discover -s tests
 ```
 
-92 tests, none needing a model: an end-to-end run on `examples/toy-paper/`
+94 tests, none needing a model: an end-to-end run on `examples/toy-paper/`
 (whose golden output is the Example above), plus unit tests. A manual acceptance
 test on a real CC BY arXiv paper is in `examples/arxiv-2610.24343/` (needs model
 agents; see its README).
