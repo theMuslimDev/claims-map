@@ -10,7 +10,7 @@ It checks **consistency, not correctness**. It never says a claim is right or
 wrong, never proposes wording, and never reads cited papers. The author decides
 the story; the map shows where the text agrees with itself.
 
-> **Status: v0.0.1, experimental.** Piloted on two LaTeX papers (one a CC BY
+> **Status: experimental.** Piloted on two LaTeX papers (one a CC BY
 > arXiv paper) with Sonnet 5.5. Expect rough edges; see
 > [CHANGELOG.md](CHANGELOG.md) and the known limits below.
 
