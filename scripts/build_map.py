@@ -3,7 +3,8 @@
 
 Usage: build_map.py CONFIG.md [SNAPSHOT_DIR]
 Inputs in <output_dir>/ : claims.json, verdicts/<section-id>.json, numcheck.json (optional)
-Output: <output_dir>/claims_map.md
+Output: <output_dir>/claims_map.md, claim_ledger.md and briefing.md (the last two come from ledger.py: one
+status per claim, computed from the anchor-checked cells only)
 
 Mechanical checks (no agent judgement involved):
   * every claim sentence must occur in the snapshot at the stated file;
@@ -19,6 +20,7 @@ import sys
 from pathlib import Path
 
 from cm_common import latest_snapshot, load_config, norm_ws, strip_tex_comment, tex_to_text
+from ledger import BASES, briefing_md, build_entries, ledger_md
 
 VERDICTS = {"anchored", "partial", "differs", "absent", "external"}
 
@@ -120,7 +122,8 @@ def main():
                 invalid.append((c["id"], s["id"]))
             else:
                 cells[(c["id"], s["id"])] = {"verdict": v["verdict"], "file": s["file"], "line": line, "quote": norm_ws(a["quote"]),
-                                             "weak": weak_anchor(c["sentence"], a["quote"])}
+                                             "weak": weak_anchor(c["sentence"], a["quote"]),
+                                             "basis": v.get("basis") if v["verdict"] == "anchored" and v.get("basis") in BASES else None}
         for u in data.get("unclaimed", []):
             line = docs[s["file"]].find(u.get("quote", ""))
             u = dict(u, section=s["id"], file=s["file"], line=line, quote_ok=line is not None)
@@ -274,7 +277,11 @@ def main():
         w("No hits.")
     w("")
     (out / "claims_map.md").write_text("\n".join(L), encoding="utf-8")
+    entries = build_entries(claims, body, cells)
+    (out / "claim_ledger.md").write_text(ledger_md(cfg, snap.name, claims, body, entries), encoding="utf-8")
+    (out / "briefing.md").write_text(briefing_md(cfg, entries), encoding="utf-8")
     print(f"wrote {out / 'claims_map.md'}: {len(claims)} claims, absent-everywhere {len(absent_all)} (+{len(absent_cites)} citation), weak anchors {len(weak)}, invalid anchors {len(invalid)}, unclaimed {len(unclaimed)}, lint hits {len(lint)}")
+    print(f"wrote {out / 'claim_ledger.md'} and {out / 'briefing.md'}")
 
 
 if __name__ == "__main__":
